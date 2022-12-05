@@ -12,6 +12,16 @@ app.get('/abc', (req, res) => {
   res.send('Hello World! new ' + new Date().toString())
 })
 
+app.get('/weather', (req, res) => {
+
+    console.log("Request ip", req.ip)   
+     res.send({
+        temp: 41,
+        humidity: 25,
+        serverTime: new Date().toString()
+      } )
+   })
+
 const __dirname= path.resolve();
 
 app.use('/', express.static ( path.join(__dirname, './web/build') ) )
