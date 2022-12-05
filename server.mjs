@@ -1,14 +1,21 @@
 console.log("I am server")
 
 import express from 'express';
-const app = express()
-const port = process.env.PORT ||5000
+import path from 'path';
 
-app.get('/', (req, res) => {
+const app = express()
+const port = process.env.PORT ||5003
+
+app.get('/abc', (req, res) => {
 
  console.log("Request ip", req.ip)   
-  res.send('Hello World!' + new Date().toString())
+  res.send('Hello World! new ' + new Date().toString())
 })
+
+const __dirname= path.resolve();
+
+app.use('/', express.static ( path.join(__dirname, './web/build') ) )
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
