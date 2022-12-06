@@ -3,7 +3,10 @@
 import { useState } from "react"
 import axios from "axios";
 
-
+let baseURL= ``;
+if(window.location.href.split(":")[0]=="http"){
+  baseURL= `http://localhost:5003`;
+}
 
 
 function App() {
@@ -15,7 +18,7 @@ function App() {
     e.preventDefault();
 
     console.log("I am click handler")
-    axios.get(`http://localhost:5003/weather`)
+    axios.get(`${baseURL}/weather`)
       .then(response => {
         console.log("response: ", response.data);
 

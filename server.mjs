@@ -18,7 +18,7 @@ app.get('/abc', (req, res) => {
 app.get('/weather', (req, res) => {
 
     console.log("Request ip", req.ip)   
-     res.send({
+     res.send({ 
         temp: 41,
         min:51,
         max:84,
