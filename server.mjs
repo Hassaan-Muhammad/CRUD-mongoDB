@@ -16,7 +16,7 @@ app.get('/abc', (req, res) => {
   res.send('Hello World! new ' + new Date().toString())
 })
 
-app.get('/weather/cityName', (req, res) => {
+app.get('/weather', (req, res) => {
 
     console.log("Request ip", req.ip)   
    
