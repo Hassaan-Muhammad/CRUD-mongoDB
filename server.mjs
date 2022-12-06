@@ -8,7 +8,7 @@ const app = express()
 const port = process.env.PORT ||5003
 
 app.use(cors());
-app.use(express.json());
+
 
 app.get('/abc', (req, res) => {
 
@@ -19,9 +19,8 @@ app.get('/abc', (req, res) => {
 app.get('/weather/cityName', (req, res) => {
 
     console.log("Request ip", req.ip)   
-    console.log("param: ", req.params.cityName)
+   
      res.send({ 
-        city: req.params.cityName,
         temp: 41,
         min:51,
         max:84,
