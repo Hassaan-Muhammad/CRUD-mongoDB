@@ -31,7 +31,7 @@ app.post('/product', (req, res) => {
   console.log(body.description)
 
   products.push({
-    id: new Date().getTime(),
+    id: ` ${new Date().getTime()}`,
     name: body.name,
     price: body.price,
     description: body.description
@@ -130,11 +130,6 @@ app.put('/product/:id', (req, res) => {
   res.send({  message:"Product succesfully stored"})
 
 })
-
-
-
-
-
 
 
 
