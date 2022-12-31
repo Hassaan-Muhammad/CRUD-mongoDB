@@ -7,8 +7,28 @@ import mongoose from 'mongoose';
 
 const app = express()
 const port = process.env.PORT || 5001
-const mongodbURI = process.env.mongodbURI || "mongodb+srv://EcommerceDB:EcommerceDB123@cluster0.oud3rz1.mongodb.net/?retryWrites=true&w=majority"
+const mongodbURI = process.env.mongodbURI ||
+   "mongodb+srv://saad:sdsdsd@cluster0.9bemtsg.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
+
+//working 
+//"mongodb+srv://abcd:abcd@cluster0.oud3rz1.mongodb.net/abcd?retryWrites=true&w=majority"; 
+
+
+
+//newdb
+//"mongodb+srv://newdb:newdb@cluster0.oud3rz1.mongodb.net/newdb?retryWrites=true&w=majority";
+
+
+
+// saad 
+  // "mongodb+srv://saad:sdsdsd@cluster0.9bemtsg.mongodb.net/ecommerce?retryWrites=true&w=majority";
+
+
+
+//"mongodb+srv://abcd:abcd@cluster0.oud3rz1.mongodb.net/abcd?retryWrites=true&w=majority"; 
+// "mongodb+srv://abcd:abcd@cluster0.eu5uldj.mongodb.net/anas?retryWrites=true&w=majority";
+//"mongodb+srv://EcommerceDB:EcommerceDB@cluster0.oud3rz1.mongodb.net/abcnet?retryWrites=true&w=majority";
 
 
 app.use(cors());
@@ -19,18 +39,12 @@ app.use(express.json());
 
 let productSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  price: Number,
+  price: String,
   description: String,
   createdOn: { type: Date, default: Date.now }
 });
 
 const productModel = mongoose.model('products', productSchema);
-
-
-
-
-
-
 
 
 
@@ -83,97 +97,115 @@ app.post('/product', (req, res) => {
 })
 
 app.get('/products', (req, res) => {
-  res.send({
-    message: "Here are all products",
-    data: products
-  })
+
+  productModel.find({}, (err, data) => {
+    if (!err) {
+      res.send({
+        message: "Got all products Succesfully",
+        data: data
+      })
+    } else {
+      res.status(500).send({
+        message: "server error"
+      })
+    }
+  });
+
+
 })
+
 
 app.get('/product/:id', (req, res) => {
 
   const id = req.params.id;
-  let isFound = false
 
-  for (let i = 0; i < products.length; i++) {
-    if (products[i].id == id) {
+  productModel.findOne({ _id: id }, (err, data) => {
+    if (!err) {
 
-      res.send({
-        message: "Get product by id",
-        data: products[i]
+      if (data) {
+        res.send({
+          message: `get product by id: ${data._id} success`,
+          data: data
+        });
+      } else {
+        res.status(404).send({
+          message: "product not found",
+        })
+      }
+    } else {
+      res.status(500).send({
+        message: "server error"
       })
-
-      isFound = true
-      break;
     }
-  }
-
-  if (isFound == false) {
-    res.status(404).send({ message: "product not found" })
-  }
-
+  });
 })
 
 app.delete('/product/:id', (req, res) => {
 
   const id = req.params.id;
-  let isFound = false
 
-  for (let i = 0; i < products.length; i++) {
-    if (products[i].id == id) {
+  productModel.deleteOne({ _id: id }, (err, deletedData) => {
+    console.log("deleted: ", deletedData);
+    if (!err) {
 
-      products.splice(i, 1)
-
-      res.send({ message: "Product deleted Successfuly" })
-      isFound = true
-      break;
+      if (deletedData.deletedCount !== 0) {
+        res.send({
+          message: "Product has been deleted successfully",
+        })
+      } else {
+        res.status(404);
+        res.send({
+          message: "No Product found with this id: " + id,
+        });
+      }
+    } else {
+      res.status(500).send({
+        message: "server error"
+      })
     }
-  }
-
-  if (isFound == false) {
-    res.status(404).send({ message: "Delete failed: product not found" })
-  }
-
+  });
 })
 
-app.put('/product/:id', (req, res) => {
+app.put('/product/:id', async (req, res) => {
 
   const body = req.body;
   const id = req.params.id;
-  let isFound = false
 
   if (
-    !body.name
-    || !body.price
-    || !body.description
+    !body.name ||
+    !body.price ||
+    !body.description
   ) {
-    res.status(400).send({ message: "required parameter failed" })
+    res.status(400).send(` required parameter missing. example request body:
+      {
+          "name": "value",
+          "price": "value",
+          "description": "value"
+      }`)
     return;
   }
 
-  console.log(body.name)
-  console.log(body.price)
-  console.log(body.description)
+  try {
+    let data = await productModel.findByIdAndUpdate(id,
+      {
+        name: body.name,
+        price: body.price,
+        description: body.description
+      },
+      { new: true }
+    ).exec();
 
-  for (let i = 0; i < products.length; i++) {
-    if (products[i].id == id) {
+    console.log('updated: ', data);
 
-      products[i].name = body.name;
-      products[i].price = body.price;
-      products[i].description = body.description;
+    res.send({
+      message: "product modified successfully"
+    });
 
-
-      res.send({ message: "Product modified Successfuly" })
-      isFound = true
-      break;
-    }
+  } catch (error) {
+    res.status(500).send({
+      message: "server error"
+    })
   }
-
-  if (!isFound) {
-    res.status(404).send({ message: "Delete failed: product not found" })
-  }
-
-  res.send({ message: "Product succesfully stored" })
-
 })
 
 

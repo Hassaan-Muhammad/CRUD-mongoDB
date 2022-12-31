@@ -3,10 +3,10 @@ import { useFormik } from 'formik';
 import { useEffect, useState } from "react";
 import * as yup from 'yup';
 
-let baseURL = ``;
-if (window.location.href.split(":")[0] === "http") {
-  baseURL = `http://localhost:5001`;
-}
+let baseURL = `http://localhost:5001`;
+// if (window.location.href.split(":")[0] === "http") {
+//   baseURL = ``;
+// }
 
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
       const response = await axios.get(`${baseURL}/products`)
       console.log("response: ", response.data);
 
-      setProducts(response.data.data)
+      setProducts(response?.data?.data)
 
     } catch (error) {
       console.log("Errror in getting all products", error)
@@ -60,10 +60,6 @@ function App() {
   }
 
 
-  useEffect(() => {
-    getAllProducts()
-
-  }, [Loadproduct])
 
 
 
@@ -142,7 +138,7 @@ function App() {
     onSubmit: (values) => {
       console.log("values: ", values);
 
-      axios.put(`${baseURL}/product/${EditingProduct.id}`, {
+      axios.put(`${baseURL}/product/${EditingProduct._id}`, {
         name: values.ProductName,
         price: values.ProductPrice,
         description: values.ProductDescription
@@ -156,6 +152,11 @@ function App() {
         })
     },
   });
+
+  useEffect(() => {
+    getAllProducts();
+
+  }, [Loadproduct])
 
 
 
@@ -216,18 +217,18 @@ function App() {
 
       <div>
         {products.map((eachProduct, i) => (
-          <div key={eachProduct.id} style={{ border: "1px solid black", padding: 10, margin: 10, borderRadius: 15 }}>
+          <div key={eachProduct._id} style={{ border: "1px solid black", padding: 10, margin: 10, borderRadius: 15 }}>
             <h2>{eachProduct.name}</h2>
-            <p>{eachProduct.id}</p>
+            <p>{eachProduct._id}</p>
             <h5>{eachProduct.price}</h5>
             <p>{eachProduct.description}</p>
 
-            <button onClick={() => { deleteProduct(eachProduct.id) }} >DELETE</button>
+            <button onClick={() => { deleteProduct(eachProduct._id) }} >DELETE</button>
 
             <button onClick={() => { editMode(eachProduct) }} >EDIT</button>
 
 
-            {(IsEditMode && EditingProduct.id === eachProduct.id) ?
+            {(IsEditMode && EditingProduct._id === eachProduct._id) ?
               <div>
 
                 <form onSubmit={EditFormik.handleSubmit}>
